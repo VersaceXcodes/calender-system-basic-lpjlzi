@@ -1,0 +1,19 @@
+{
+  "timestamp": 1747305206336,
+  "operation": {
+    "id": "webapp:react:views",
+    "refs": {
+      "id": "UV_CalendarLanding",
+      "version": "latest"
+    }
+  },
+  "projectId": "calender-system-basic",
+  "files": [
+    {
+      "path": "/mnt/data/calender-system-basic/vitereact/src/components/views/UV_CalendarLanding.tsx",
+      "type": "text",
+      "size": 7026,
+      "dependencies": false
+    }
+  ]
+}

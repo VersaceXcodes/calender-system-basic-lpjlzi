@@ -1,0 +1,15 @@
+{
+  "timestamp": 1747304905398,
+  "operation": {
+    "id": "backend:server:main"
+  },
+  "projectId": "calender-system-basic",
+  "files": [
+    {
+      "path": "/mnt/data/calender-system-basic/backend/server.js",
+      "type": "text",
+      "size": 17185,
+      "dependencies": false
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "timestamp": 1747304658126,
+  "operation": {
+    "id": "backend:specifications:openapi"
+  },
+  "projectId": "calender-system-basic",
+  "files": [
+    {
+      "path": "/mnt/data/calender-system-basic/backend/openapi.yaml",
+      "type": "text",
+      "size": 12677,
+      "dependencies": false
+    }
+  ]
+}

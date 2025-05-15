@@ -1,0 +1,19 @@
+{
+  "timestamp": 1747305987421,
+  "operation": {
+    "id": "webapp:react:views",
+    "refs": {
+      "id": "UV_AdminTimeslotManagement",
+      "version": "1747305986679"
+    }
+  },
+  "projectId": "calender-system-basic",
+  "files": [
+    {
+      "path": "/mnt/data/calender-system-basic/vitereact/src/components/views/UV_AdminTimeslotManagement.tsx",
+      "type": "text",
+      "size": 9839,
+      "dependencies": false
+    }
+  ]
+}

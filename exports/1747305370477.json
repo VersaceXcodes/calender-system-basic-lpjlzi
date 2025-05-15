@@ -1,0 +1,19 @@
+{
+  "timestamp": 1747305370477,
+  "operation": {
+    "id": "webapp:react:views",
+    "refs": {
+      "id": "GV_TopNav_Public",
+      "version": "latest"
+    }
+  },
+  "projectId": "calender-system-basic",
+  "files": [
+    {
+      "path": "/mnt/data/calender-system-basic/vitereact/src/components/views/GV_TopNav_Public.tsx",
+      "type": "text",
+      "size": 5395,
+      "dependencies": false
+    }
+  ]
+}

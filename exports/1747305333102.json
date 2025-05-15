@@ -1,0 +1,19 @@
+{
+  "timestamp": 1747305333102,
+  "operation": {
+    "id": "webapp:react:views",
+    "refs": {
+      "id": "UV_AdminBookingManagement",
+      "version": "latest"
+    }
+  },
+  "projectId": "calender-system-basic",
+  "files": [
+    {
+      "path": "/mnt/data/calender-system-basic/vitereact/src/components/views/UV_AdminBookingManagement.tsx",
+      "type": "text",
+      "size": 11110,
+      "dependencies": false
+    }
+  ]
+}

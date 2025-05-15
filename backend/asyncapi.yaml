@@ -1,0 +1,91 @@
+asyncapi: 2.0.0
+info:
+  title: Calendar System Basic Realtime API
+  version: 1.0.0
+  description: >
+    This AsyncAPI document defines the realtime websocket events for the
+    Calendar System Basic MVP. It covers realtime updates for timeslot status
+    and booking operations, ensuring that clients receive up-to-date information
+    on available timeslots and booking events.
+defaultContentType: application/json
+servers:
+  development:
+    url: localhost:3000
+    protocol: ws
+    description: Development server for realtime events
+channels:
+  timeslot_update:
+    description: >
+      Event triggered whenever a timeslot's status changes due to booking
+      creation, cancellation, or any administrative modification. Clients
+      subscribe to this channel to stay informed about current timeslot
+      availability.
+    subscribe:
+      operationId: on_timeslot_update
+      summary: Subscribe to timeslot status updates.
+      message:
+        $ref: "#/components/messages/timeslot_update_message"
+  booking_update:
+    description: >
+      Event triggered when a new booking is created or an existing booking is
+      canceled. Clients subscribing to this channel receive realtime status
+      updates on booking changes.
+    subscribe:
+      operationId: on_booking_update
+      summary: Subscribe to booking status updates.
+      message:
+        $ref: "#/components/messages/booking_update_message"
+components:
+  messages:
+    timeslot_update_message:
+      name: timeslot_update
+      title: Timeslot Update Message
+      payload:
+        $ref: "#/components/schemas/timeslot_update"
+    booking_update_message:
+      name: booking_update
+      title: Booking Update Message
+      payload:
+        $ref: "#/components/schemas/booking_update"
+  schemas:
+    timeslot_update:
+      type: object
+      properties:
+        timeslot_id:
+          type: string
+          description: Unique identifier for the timeslot.
+        slot_date:
+          type: string
+          description: The date of the timeslot in the format YYYY-MM-DD.
+        start_time:
+          type: string
+          description: The start time of the timeslot.
+        end_time:
+          type: string
+          description: The end time of the timeslot.
+        is_booked:
+          type: boolean
+          description: Flag indicating whether the timeslot is booked (true) or available
+            (false).
+      required:
+        - timeslot_id
+        - slot_date
+        - start_time
+        - end_time
+        - is_booked
+    booking_update:
+      type: object
+      properties:
+        booking_id:
+          type: string
+          description: Unique identifier for the booking.
+        timeslot_id:
+          type: string
+          description: Identifier of the associated timeslot.
+        booking_status:
+          type: string
+          description: Current status of the booking (e.g., "active", "canceled").
+      required:
+        - booking_id
+        - timeslot_id
+        - booking_status

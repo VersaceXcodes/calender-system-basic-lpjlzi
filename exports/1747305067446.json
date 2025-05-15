@@ -1,0 +1,19 @@
+{
+  "timestamp": 1747305067446,
+  "operation": {
+    "id": "webapp:react:store",
+    "refs": {
+      "id": "redux",
+      "version": "latest"
+    }
+  },
+  "projectId": "calender-system-basic",
+  "files": [
+    {
+      "path": "/mnt/data/calender-system-basic/vitereact/src/store/main.tsx",
+      "type": "text",
+      "size": 5794,
+      "dependencies": false
+    }
+  ]
+}

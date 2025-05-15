@@ -1,0 +1,19 @@
+{
+  "timestamp": 1747305245430,
+  "operation": {
+    "id": "webapp:react:views",
+    "refs": {
+      "id": "UV_TimeslotSelection",
+      "version": "1747305136518"
+    }
+  },
+  "projectId": "calender-system-basic",
+  "files": [
+    {
+      "path": "/mnt/data/calender-system-basic/vitereact/src/components/views/UV_TimeslotSelection.tsx",
+      "type": "text",
+      "size": 3805,
+      "dependencies": false
+    }
+  ]
+}

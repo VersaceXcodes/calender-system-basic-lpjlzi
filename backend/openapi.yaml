@@ -1,0 +1,455 @@
+openapi: 3.0.0
+info:
+  title: Calendar System Basic API
+  version: 1.0.0
+  description: >
+    This is the comprehensive API specification for the Calendar System Basic
+    MVP. It provides endpoints for both casual bookers and scheduler admins,
+    supporting calendar display, booking operations, admin authentication,
+    timeslot management, and booking management. The API uses JWT-based
+    authentication for admin endpoints.
+servers:
+  - url: http://localhost:3000
+    description: Local Development Server
+paths:
+  /api/calendar:
+    get:
+      summary: Retrieve aggregated monthly calendar view
+      description: >
+        Retrieves an aggregated view of the calendar for a given month and year.
+        Returns grouped information from timeslot records (available vs booked).
+      operationId: get_calendar
+      parameters:
+        - $ref: "#/components/parameters/monthParam"
+        - $ref: "#/components/parameters/yearParam"
+      responses:
+        "200":
+          description: A list of daily calendar summaries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CalendarSummary"
+  /api/timeslots:
+    get:
+      summary: Retrieve timeslot records for a specific date
+      description: >
+        Retrieves all timeslot records for the specified slot_date. Each record
+        includes start_time, end_time, and booking status.
+      operationId: get_timeslots
+      parameters:
+        - $ref: "#/components/parameters/slotDateParam"
+      responses:
+        "200":
+          description: A list of timeslot objects for the given date
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Timeslot"
+  /api/bookings:
+    post:
+      summary: Create a new booking
+      description: >
+        Submits a booking request for a selected timeslot. Validates the
+        timeslot’s availability, writes a new booking record, and updates the
+        associated timeslot.
+      operationId: create_booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingRequest"
+      responses:
+        "200":
+          description: Booking created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingResponse"
+        "400":
+          description: Invalid request or timeslot conflict
+  /api/admin/login:
+    post:
+      summary: Admin login for authentication
+      description: >
+        Authenticates an admin user using username and password, and returns a
+        JWT token upon successful login.
+      operationId: admin_login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminLoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminLoginResponse"
+        "401":
+          description: Invalid credentials
+  /api/admin/timeslots:
+    post:
+      summary: Add a new timeslot (Admin)
+      description: >
+        Allows an admin to add a new timeslot by providing the date, start time,
+        and end time. Ensures no overlapping timeslots exist.
+      operationId: admin_add_timeslot
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddTimeslotRequest"
+      responses:
+        "200":
+          description: Timeslot added successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AddTimeslotResponse"
+        "400":
+          description: Invalid timeslot data or overlap detected
+  /api/admin/timeslots/{timeslot_id}:
+    put:
+      summary: Edit an existing timeslot (Admin)
+      description: >
+        Allows an admin to update the start time and/or end time of an existing
+        timeslot. Validates for conflicts before updating.
+      operationId: admin_update_timeslot
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/timeslotIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTimeslotRequest"
+      responses:
+        "200":
+          description: Timeslot updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateResponse"
+        "400":
+          description: Invalid update parameters or conflict
+    delete:
+      summary: Delete an existing timeslot (Admin)
+      description: >
+        Allows an admin to delete an existing timeslot. A confirmation of
+        deletion is returned.
+      operationId: admin_delete_timeslot
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/timeslotIdParam"
+      responses:
+        "200":
+          description: Timeslot deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateResponse"
+        "400":
+          description: Timeslot deletion failed
+  /api/admin/bookings:
+    get:
+      summary: Retrieve booking records (Admin)
+      description: >
+        Retrieves all booking records with optional filtering by slot_date.
+        Returns a list of booking objects with complete details.
+      operationId: admin_get_bookings
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: slot_date
+          schema:
+            type: string
+          required: false
+          description: Filter bookings by slot_date (YYYY-MM-DD)
+      responses:
+        "200":
+          description: List of booking records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BookingObject"
+    put:
+      summary: Cancel a booking (Admin)
+      description: >
+        Cancels an existing booking by setting its status to canceled, and
+        updates the associated timeslot to available.
+      operationId: admin_cancel_booking
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/bookingIdParam"
+      responses:
+        "200":
+          description: Booking canceled and timeslot updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CancelBookingResponse"
+        "400":
+          description: Cancellation failed
+  /api/admin/bookings/{booking_id}/cancel:
+    put:
+      summary: Cancel a booking (Alternate Admin Endpoint)
+      description: |
+        Cancels a booking by specifying the booking_id.
+      operationId: admin_cancel_booking_by_id
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/bookingIdParam"
+      responses:
+        "200":
+          description: Booking canceled successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CancelBookingResponse"
+        "400":
+          description: Failed to cancel booking
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    monthParam:
+      name: month
+      in: query
+      description: Month for calendar view (e.g., '10' for October)
+      required: true
+      schema:
+        type: string
+    yearParam:
+      name: year
+      in: query
+      description: Year for calendar view (e.g., '2023')
+      required: true
+      schema:
+        type: string
+    slotDateParam:
+      name: slot_date
+      in: query
+      description: The date for which timeslots are requested in YYYY-MM-DD format
+      required: true
+      schema:
+        type: string
+    timeslotIdParam:
+      name: timeslot_id
+      in: path
+      description: The unique identifier of a timeslot
+      required: true
+      schema:
+        type: string
+    bookingIdParam:
+      name: booking_id
+      in: path
+      description: The unique identifier of a booking
+      required: true
+      schema:
+        type: string
+  schemas:
+    CalendarSummary:
+      type: object
+      required:
+        - slot_date
+        - available
+        - total_slots
+        - booked_slots
+      properties:
+        slot_date:
+          type: string
+          description: Date in YYYY-MM-DD format
+        available:
+          type: boolean
+          description: True if there is at least one available slot on the day
+        total_slots:
+          type: integer
+          description: Total number of timeslots for the day
+        booked_slots:
+          type: integer
+          description: Number of booked timeslots for the day
+    Timeslot:
+      type: object
+      required:
+        - timeslot_id
+        - slot_date
+        - start_time
+        - end_time
+        - is_booked
+      properties:
+        timeslot_id:
+          type: string
+        slot_date:
+          type: string
+        start_time:
+          type: string
+        end_time:
+          type: string
+        is_booked:
+          type: boolean
+    BookingRequest:
+      type: object
+      required:
+        - timeslot_id
+        - full_name
+        - email
+      properties:
+        timeslot_id:
+          type: string
+        full_name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        appointment_notes:
+          type: string
+    BookingResponse:
+      type: object
+      required:
+        - booking_id
+        - message
+        - booking_details
+      properties:
+        booking_id:
+          type: string
+        message:
+          type: string
+        booking_details:
+          type: object
+          required:
+            - timeslot_id
+            - full_name
+            - email
+            - slot_date
+            - start_time
+            - end_time
+          properties:
+            timeslot_id:
+              type: string
+            full_name:
+              type: string
+            email:
+              type: string
+            slot_date:
+              type: string
+            start_time:
+              type: string
+            end_time:
+              type: string
+    AdminLoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    AdminLoginResponse:
+      type: object
+      required:
+        - admin_id
+        - token
+        - message
+      properties:
+        admin_id:
+          type: string
+        token:
+          type: string
+        message:
+          type: string
+    AddTimeslotRequest:
+      type: object
+      required:
+        - slot_date
+        - start_time
+        - end_time
+      properties:
+        slot_date:
+          type: string
+        start_time:
+          type: string
+        end_time:
+          type: string
+    AddTimeslotResponse:
+      type: object
+      required:
+        - timeslot_id
+        - message
+      properties:
+        timeslot_id:
+          type: string
+        message:
+          type: string
+    UpdateTimeslotRequest:
+      type: object
+      properties:
+        start_time:
+          type: string
+        end_time:
+          type: string
+    UpdateResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+    BookingObject:
+      type: object
+      required:
+        - booking_id
+        - timeslot_id
+        - full_name
+        - email
+        - booking_status
+        - created_at
+      properties:
+        booking_id:
+          type: string
+        timeslot_id:
+          type: string
+        full_name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        appointment_notes:
+          type: string
+        booking_status:
+          type: string
+          description: "Status of booking: e.g., active, canceled"
+        created_at:
+          type: string
+    CancelBookingResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
